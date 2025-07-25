@@ -10,6 +10,8 @@ async function bootstrap() {
 
   const configs = app.select(AppModule).get(Configuration);
 
+  app.setGlobalPrefix(configs.app.basePath);
+
   await app.listen(configs.app.port, () =>
     logger.log(`Running on ${configs.app.port}`),
   );
