@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SharedModule } from '@/shared/shared.module';
+import { ConfigModule } from '@nestjs/config';
+import { Configuration } from '@/shared/configuration';
+import { HealthController } from '@/api/http';
 
 @Module({
-  imports: [SharedModule],
-  controllers: [],
-  providers: [],
+  imports: [ConfigModule.forRoot()],
+  controllers: [HealthController],
+  providers: [Configuration],
 })
 export class AppModule {}

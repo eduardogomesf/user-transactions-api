@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 class App {
   port: number;
+  basePath: string;
 }
 
 @Injectable()
@@ -12,6 +13,7 @@ export class Configuration {
   constructor(private readonly configService: ConfigService) {
     this.app = {
       port: Number(this.configService.get('PORT') ?? 3000),
+      basePath: this.configService.get('APP_BASE_PATH') ?? 'api',
     };
   }
 }
