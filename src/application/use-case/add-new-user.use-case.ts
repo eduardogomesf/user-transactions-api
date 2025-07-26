@@ -11,7 +11,7 @@ import { ERROR_CODES, USER_ERROR_MESSAGES } from '@/shared/constant';
 import { plainToInstance } from 'class-transformer';
 import { User } from '@/domain/entity';
 import { FieldsValidator } from '@/shared/util';
-import { HashingService } from '../type/service';
+import { HashingService, IdGeneratorService } from '../type/service';
 
 @Injectable()
 export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
@@ -20,6 +20,7 @@ export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
     private readonly getUserByEmailRepository: GetUserByEmailRepository,
     private readonly saveUserRepository: SaveUserRepository,
     private readonly hashingService: HashingService,
+    private readonly idGeneratorService: IdGeneratorService,
   ) {}
 
   async execute(
@@ -62,11 +63,15 @@ export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
       };
     }
 
-    const user = plainToInstance(User, params);
-
     const hashedPassword = await this.hashingService.hash(params.password);
 
-    user.password = hashedPassword;
+    const userId = this.idGeneratorService.generate();
+
+    const user = plainToInstance(User, {
+      ...params,
+      id: userId,
+      password: hashedPassword,
+    });
 
     await this.saveUserRepository.save(user);
 
