@@ -1,13 +1,13 @@
 import { validate } from 'class-validator';
-import { ValidationError } from '../type';
+import { FieldValidationError } from '../type';
 
 export class FieldsValidator {
   static async validate(
-    obj: Record<string, unknown>,
+    obj: Record<any, unknown>,
     hideValuesInErrors = false,
   ): Promise<{
     valid: boolean;
-    errors: ValidationError[];
+    errors: FieldValidationError[];
   }> {
     const validationResult = await validate(obj);
 
@@ -21,7 +21,9 @@ export class FieldsValidator {
     const errors = validationResult.map((vr) => ({
       field: vr.property,
       value: hideValuesInErrors ? '[redacted]' : vr.value,
-      errors: vr.constraints,
+      errors: Object.entries(vr.constraints).map(
+        ([constraint, message]) => `${constraint}: ${message}`,
+      ),
     }));
 
     return {

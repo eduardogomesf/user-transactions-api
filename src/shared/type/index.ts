@@ -1,2 +1,2 @@
 export * from './use-case.type';
-export * from './validation-error.type';
+export * from './field-validation-error.type';
