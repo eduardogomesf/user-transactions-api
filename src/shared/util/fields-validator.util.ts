@@ -3,7 +3,7 @@ import { FieldValidationError } from '../type';
 
 export class FieldsValidator {
   static async validate(
-    obj: Record<any, unknown>,
+    obj: any,
     hideValuesInErrors = false,
   ): Promise<{
     valid: boolean;
