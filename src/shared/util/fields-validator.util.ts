@@ -31,4 +31,8 @@ export class FieldsValidator {
       errors,
     };
   }
+
+  static formatErrorMessage(validationErrors: FieldValidationError[]): string {
+    return JSON.stringify(validationErrors);
+  }
 }
