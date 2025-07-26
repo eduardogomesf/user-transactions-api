@@ -5,18 +5,15 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
 } from 'class-validator';
+import { Entity } from './entity';
 
 export enum UserType {
   storekeeper = 'storekeeper',
   common = 'common',
 }
 
-export class User {
-  @IsUUID('7')
-  id: string;
-
+export class User extends Entity {
   @IsString()
   @IsNotEmpty()
   full_name: string;
