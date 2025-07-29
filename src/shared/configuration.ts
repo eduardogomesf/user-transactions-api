@@ -10,10 +10,15 @@ class Hashing {
   rounds: number;
 }
 
+class Database {
+  url: string;
+}
+
 @Injectable()
 export class Configuration {
   app: App;
   hashing: Hashing;
+  relationalDb: Database;
 
   constructor(private readonly configService: ConfigService) {
     this.app = {
@@ -22,6 +27,9 @@ export class Configuration {
     };
     this.hashing = {
       rounds: Number(this.configService.get('HASH_ROUNDS') ?? 10),
+    };
+    this.relationalDb = {
+      url: this.configService.getOrThrow('DB_CONNECTION_STRING'),
     };
   }
 }

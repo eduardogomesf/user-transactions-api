@@ -1,10 +1,20 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Configuration } from '@/shared/configuration';
 import { HealthController } from '@/api/http';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRootAsync({
+      inject: [Configuration],
+      useFactory: (configs: Configuration) => ({
+        type: 'postgres',
+        url: configs.relationalDb.url,
+      }),
+    }),
+  ],
   controllers: [HealthController],
   providers: [Configuration],
 })
