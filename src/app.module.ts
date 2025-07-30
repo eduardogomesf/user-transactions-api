@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Configuration } from '@/shared/configuration';
 import { HealthController } from '@/api/http';
+import { UserModel } from '@/infra/database/relational/model';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { HealthController } from '@/api/http';
       useFactory: (configs: Configuration) => ({
         type: 'postgres',
         url: configs.relationalDb.url,
+        entities: [UserModel],
       }),
     }),
   ],
