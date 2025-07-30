@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UseCase } from '@/shared/type';
 import {
   AddNewUserUseCaseParams,
@@ -7,7 +7,13 @@ import {
   GetUserByDocumentRepository,
   SaveUserRepository,
 } from '../type';
-import { ERROR_CODES, USER_ERROR_MESSAGES } from '@/shared/constant';
+import {
+  ERROR_CODES,
+  HASHING_SERVICE,
+  ID_GENERATOR_SERVICE,
+  USER_ERROR_MESSAGES,
+  USER_REPOSITORY,
+} from '@/shared/constant';
 import { plainToInstance } from 'class-transformer';
 import { User } from '@/domain/entity';
 import { FieldsValidator } from '@/shared/util';
@@ -16,10 +22,15 @@ import { HashingService, IdGeneratorService } from '../type/service';
 @Injectable()
 export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
   constructor(
+    @Inject(USER_REPOSITORY)
     private readonly getUserByDocumentRepository: GetUserByDocumentRepository,
+    @Inject(USER_REPOSITORY)
     private readonly getUserByEmailRepository: GetUserByEmailRepository,
+    @Inject(USER_REPOSITORY)
     private readonly saveUserRepository: SaveUserRepository,
+    @Inject(HASHING_SERVICE)
     private readonly hashingService: HashingService,
+    @Inject(ID_GENERATOR_SERVICE)
     private readonly idGeneratorService: IdGeneratorService,
   ) {}
 
