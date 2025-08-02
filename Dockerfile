@@ -14,9 +14,9 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
-RUN yarn install --production
-
 COPY --from=builder /app ./
+
+RUN yarn install --production
 
 USER appuser
 

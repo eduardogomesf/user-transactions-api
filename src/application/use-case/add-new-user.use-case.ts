@@ -1,0 +1,94 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { UseCase } from '@/shared/type';
+import {
+  AddNewUserUseCaseParams,
+  AddNewUserUseCaseResponse,
+  GetUserByEmailRepository,
+  GetUserByDocumentRepository,
+  SaveUserRepository,
+} from '../type';
+import {
+  ERROR_CODES,
+  HASHING_SERVICE,
+  ID_GENERATOR_SERVICE,
+  USER_ERROR_MESSAGES,
+  USER_REPOSITORY,
+} from '@/shared/constant';
+import { plainToInstance } from 'class-transformer';
+import { User } from '@/domain/entity';
+import { FieldsValidator } from '@/shared/util';
+import { HashingService, IdGeneratorService } from '../type/service';
+
+@Injectable()
+export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly getUserByDocumentRepository: GetUserByDocumentRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly getUserByEmailRepository: GetUserByEmailRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly saveUserRepository: SaveUserRepository,
+    @Inject(HASHING_SERVICE)
+    private readonly hashingService: HashingService,
+    @Inject(ID_GENERATOR_SERVICE)
+    private readonly idGeneratorService: IdGeneratorService,
+  ) {}
+
+  async execute(
+    params: AddNewUserUseCaseParams,
+  ): Promise<AddNewUserUseCaseResponse> {
+    const paramsValidation = await FieldsValidator.validate(params);
+
+    if (!paramsValidation.valid) {
+      return {
+        success: false,
+        data: null,
+        code: ERROR_CODES.fieldValidationError,
+        message: FieldsValidator.formatErrorMessage(paramsValidation.errors),
+      };
+    }
+
+    const userByDocument = await this.getUserByDocumentRepository.getByDocument(
+      params.document,
+    );
+
+    if (userByDocument) {
+      return {
+        data: null,
+        success: false,
+        code: ERROR_CODES.alreadyExists,
+        message: USER_ERROR_MESSAGES.documentInUse,
+      };
+    }
+
+    const userByEmail = await this.getUserByEmailRepository.getByEmail(
+      params.email,
+    );
+
+    if (userByEmail) {
+      return {
+        data: null,
+        success: false,
+        code: ERROR_CODES.alreadyExists,
+        message: USER_ERROR_MESSAGES.emailInUse,
+      };
+    }
+
+    const hashedPassword = await this.hashingService.hash(params.password);
+
+    const userId = this.idGeneratorService.generate();
+
+    const user = plainToInstance(User, {
+      ...params,
+      id: userId,
+      password: hashedPassword,
+    });
+
+    await this.saveUserRepository.save(user);
+
+    return {
+      data: user.id,
+      success: true,
+    };
+  }
+}
