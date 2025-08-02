@@ -10,16 +10,13 @@ import {
   IdGeneratorServiceProvider,
   UserRepositoryProvider,
 } from '@/infra/nestjs/provider';
+import typeormConfig from '@/infra/database/relational/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DB_CONNECTION_STRING, // TO DO: use configuration instead of retrieving value from env
-      entities: [UserModel],
-    }),
-    TypeOrmModule.forFeature([UserModel]), // Is calling forFeature after forRoot a good approach?
+    TypeOrmModule.forRoot(typeormConfig),
+    TypeOrmModule.forFeature([UserModel]),
   ],
   controllers: [HealthController, UserController],
   providers: [
