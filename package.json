@@ -1,10 +1,9 @@
 {
-  "name": "user-transactions-challenge",
+  "name": "user-transactions",
   "version": "0.0.1",
   "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "author": "eduardogomesf",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
