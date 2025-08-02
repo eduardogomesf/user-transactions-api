@@ -7422,9 +7422,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"user-transactions-challenge@workspace:.":
+"user-transactions@workspace:.":
   version: 0.0.0-use.local
-  resolution: "user-transactions-challenge@workspace:."
+  resolution: "user-transactions@workspace:."
   dependencies:
     "@nestjs/cli": "npm:^10.0.0"
     "@nestjs/common": "npm:^10.0.0"
