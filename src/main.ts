@@ -27,7 +27,9 @@ async function bootstrap() {
 
   const swaggerDoc = SwaggerModule.createDocument(app, swaggerConfigs);
 
-  SwaggerModule.setup(`${configs.app.basePath}`, app, swaggerDoc);
+  SwaggerModule.setup(`${configs.app.basePath}`, app, swaggerDoc, {
+    jsonDocumentUrl: `${configs.app.basePath}/json`,
+  });
 
   // Start app
   await app.listen(configs.app.port, () =>
