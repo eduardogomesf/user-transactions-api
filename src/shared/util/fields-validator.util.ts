@@ -9,7 +9,9 @@ export class FieldsValidator {
     valid: boolean;
     errors: FieldValidationError[];
   }> {
-    const validationResult = await validate(obj);
+    const validationResult = await validate(obj, {
+      forbidUnknownValues: false,
+    });
 
     if (!validationResult?.length) {
       return {
