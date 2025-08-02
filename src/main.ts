@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Configuration } from '@/shared/configuration';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { version } from 'package.json';
 
@@ -10,12 +10,13 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  // TO DO: add validation pipeline
-
   const configs = app.select(AppModule).get(Configuration);
 
+  // App setup
   app.setGlobalPrefix(configs.app.basePath);
+  app.useGlobalPipes(new ValidationPipe());
 
+  // Swagger
   const swaggerConfigs = new DocumentBuilder()
     .setTitle('User Transactions API')
     .setDescription(
@@ -28,6 +29,7 @@ async function bootstrap() {
 
   SwaggerModule.setup(`${configs.app.basePath}`, app, swaggerDoc);
 
+  // Start app
   await app.listen(configs.app.port, () =>
     logger.log(`Running on ${configs.app.port}`),
   );
