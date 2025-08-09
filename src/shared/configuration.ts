@@ -14,11 +14,19 @@ class Database {
   url: string;
 }
 
+class Token {
+  accessToken: {
+    secret: string;
+    durationInSeconds: number;
+  };
+}
+
 @Injectable()
 export class Configuration {
   app: App;
   hashing: Hashing;
   relationalDb: Database;
+  token: Token;
 
   constructor(private readonly configService: ConfigService) {
     this.app = {
@@ -30,6 +38,14 @@ export class Configuration {
     };
     this.relationalDb = {
       url: this.configService.getOrThrow('DB_CONNECTION_STRING'),
+    };
+    this.token = {
+      accessToken: {
+        secret: this.configService.getOrThrow('ACCESS_TOKEN_SECRET'),
+        durationInSeconds: Number(
+          this.configService.get('ACCESS_TOKEN_EXPIRATION_IN_SECONDS') ?? '900',
+        ),
+      },
     };
   }
 }
