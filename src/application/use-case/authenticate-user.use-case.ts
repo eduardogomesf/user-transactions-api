@@ -69,16 +69,13 @@ export class AuthenticateUserUseCase
       return invalidCredentialsResponse;
     }
 
-    const accessTokenDurationInMs =
-      this.configs.token.accessToken.durationInSeconds * 1000;
-
-    const token = this.tokenService.generate(
+    const generatedToken = this.tokenService.generate(
       credentials.id,
       this.configs.token.accessToken.durationInSeconds,
       this.configs.token.accessToken.secret,
     );
 
-    if (!token) {
+    if (!generatedToken || !generatedToken.token) {
       return {
         success: false,
         data: null,
@@ -87,15 +84,11 @@ export class AuthenticateUserUseCase
       };
     }
 
-    const expirationDate = new Date(
-      new Date().getTime() + accessTokenDurationInMs,
-    );
-
     return {
       success: true,
       data: {
-        token: token,
-        expiresAt: expirationDate.toISOString(),
+        token: generatedToken.token,
+        expiresAt: generatedToken.expiresAt,
       },
     };
   }

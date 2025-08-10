@@ -17,6 +17,8 @@ describe('AuthenticateUserUseCase', () => {
   let tokenService: TokenService;
   let configs: Configuration;
 
+  const tokenExpirationDate = '2025-08-10T01:06:12.497Z';
+
   beforeEach(() => {
     getUserCredentialsByEmailRepository = {
       getCredentials: jest.fn().mockResolvedValue({
@@ -30,7 +32,10 @@ describe('AuthenticateUserUseCase', () => {
       hash: jest.fn(),
     };
     tokenService = {
-      generate: jest.fn().mockReturnValue('valid-token'),
+      generate: jest.fn().mockReturnValue({
+        token: 'valid-token',
+        expiresAt: tokenExpirationDate,
+      }),
     };
     configs = {
       token: {
@@ -66,7 +71,7 @@ describe('AuthenticateUserUseCase', () => {
 
     expect(result.success).toBe(true);
     expect(result.data.token).toBe('valid-token');
-    expect(result.data.expiresAt).toBeDefined();
+    expect(result.data.expiresAt).toBe(tokenExpirationDate);
     expect(getCredentialsSpy).toHaveBeenCalledWith(params.email);
     expect(compareSpy).toHaveBeenCalledWith(params.password, 'hashed-password');
     expect(generateSpy).toHaveBeenCalledWith('any-id', 900, 'any-secret');
