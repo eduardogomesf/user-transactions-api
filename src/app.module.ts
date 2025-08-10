@@ -4,7 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Configuration } from '@/shared/configuration';
 import { HealthController, UserController } from '@/api/http';
 import { UserModel } from '@/infra/database/relational/model';
-import { AddNewUserUseCase } from '@/application/use-case';
+import {
+  AddNewUserUseCase,
+  AuthenticateUserUseCase,
+} from '@/application/use-case';
 import {
   HashingServiceProvider,
   IdGeneratorServiceProvider,
@@ -25,6 +28,7 @@ import typeormConfig from '@/infra/database/relational/config';
     UserRepositoryProvider,
     HashingServiceProvider,
     IdGeneratorServiceProvider,
+    AuthenticateUserUseCase,
   ],
 })
 export class AppModule {}

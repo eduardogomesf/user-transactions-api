@@ -16,7 +16,7 @@ import { HashingService, TokenService } from '../type/service';
 import { Configuration } from '@/shared/configuration';
 
 @Injectable()
-export class AuthenticateUser
+export class AuthenticateUserUseCase
   implements UseCase<AuthenticateUserUseCaseParams>
 {
   constructor(
