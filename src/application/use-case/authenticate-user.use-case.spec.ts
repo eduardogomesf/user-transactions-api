@@ -1,0 +1,131 @@
+import { Configuration } from '@/shared/configuration';
+import {
+  CREDENTIAL_ERROR_CODES,
+  CREDENTIAL_ERROR_MESSAGES,
+  ERROR_CODES,
+  ERROR_MESSAGES,
+} from '@/shared/constant';
+import { FieldsValidator } from '@/shared/util';
+import { GetUserCredentialsByEmailRepository } from '../type';
+import { HashingService, TokenService } from '../type/service';
+import { AuthenticateUserUseCase } from './authenticate-user.use-case';
+
+describe('AuthenticateUserUseCase', () => {
+  let sut: AuthenticateUserUseCase;
+  let getUserCredentialsByEmailRepository: GetUserCredentialsByEmailRepository;
+  let hashingService: HashingService;
+  let tokenService: TokenService;
+  let configs: Configuration;
+
+  beforeEach(() => {
+    getUserCredentialsByEmailRepository = {
+      getCredentials: jest.fn().mockResolvedValue({
+        id: 'any-id',
+        email: 'test@mail.com',
+        password: 'hashed-password',
+      }),
+    };
+    hashingService = {
+      compare: jest.fn().mockResolvedValue(true),
+      hash: jest.fn(),
+    };
+    tokenService = {
+      generate: jest.fn().mockReturnValue('valid-token'),
+    };
+    configs = {
+      token: {
+        accessToken: {
+          durationInSeconds: 900,
+          secret: 'any-secret',
+        },
+      },
+    } as unknown as Configuration;
+
+    sut = new AuthenticateUserUseCase(
+      getUserCredentialsByEmailRepository,
+      hashingService,
+      tokenService,
+      configs,
+    );
+  });
+
+  it('should generate a valid token', async () => {
+    const getCredentialsSpy = jest.spyOn(
+      getUserCredentialsByEmailRepository,
+      'getCredentials',
+    );
+    const compareSpy = jest.spyOn(hashingService, 'compare');
+    const generateSpy = jest.spyOn(tokenService, 'generate');
+
+    const params = {
+      email: 'test@mail.com',
+      password: 'any-password',
+    };
+
+    const result = await sut.execute(params);
+
+    expect(result.success).toBe(true);
+    expect(result.data.token).toBe('valid-token');
+    expect(result.data.expiresAt).toBeDefined();
+    expect(getCredentialsSpy).toHaveBeenCalledWith(params.email);
+    expect(compareSpy).toHaveBeenCalledWith(params.password, 'hashed-password');
+    expect(generateSpy).toHaveBeenCalledWith('any-id', 900, 'any-secret');
+  });
+
+  it('should return false if provided params are invalid', async () => {
+    jest.spyOn(FieldsValidator, 'validate').mockResolvedValueOnce({
+      valid: false,
+      errors: [],
+    });
+
+    const result = await sut.execute({} as any);
+
+    expect(result.success).toBe(false);
+    expect(result.data).toBeNull();
+    expect(result.code).toBe(ERROR_CODES.fieldValidationError);
+  });
+
+  it('should not generate token if email is invalid', async () => {
+    getUserCredentialsByEmailRepository.getCredentials = jest
+      .fn()
+      .mockResolvedValue(null);
+
+    const result = await sut.execute({
+      email: 'invalid-test@mail.com',
+      password: 'any-password',
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.data).toBeNull();
+    expect(result.code).toBe(CREDENTIAL_ERROR_CODES.invalidCredentials);
+    expect(result.message).toBe(CREDENTIAL_ERROR_MESSAGES.invalidCredentials);
+  });
+
+  it('should not generate token if password is invalid', async () => {
+    hashingService.compare = jest.fn().mockResolvedValue(false);
+
+    const result = await sut.execute({
+      email: 'test@mail.com',
+      password: 'invalid-password',
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.data).toBeNull();
+    expect(result.code).toBe(CREDENTIAL_ERROR_CODES.invalidCredentials);
+    expect(result.message).toBe(CREDENTIAL_ERROR_MESSAGES.invalidCredentials);
+  });
+
+  it('should return success as false if token was not generated successfully', async () => {
+    tokenService.generate = jest.fn().mockReturnValue(null);
+
+    const result = await sut.execute({
+      email: 'test@mail.com',
+      password: 'any-password',
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.data).toBeNull();
+    expect(result.code).toBe(ERROR_CODES.unexpectedError);
+    expect(result.message).toBe(ERROR_MESSAGES.unexpectedError);
+  });
+});

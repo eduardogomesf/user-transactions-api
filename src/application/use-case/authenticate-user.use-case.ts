@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UseCase } from '@/shared/type';
 import {
   AuthenticateUserUseCaseParams,
@@ -11,6 +11,8 @@ import {
   CREDENTIAL_ERROR_MESSAGES,
   ERROR_CODES,
   ERROR_MESSAGES,
+  HASHING_SERVICE,
+  USER_REPOSITORY,
 } from '@/shared/constant';
 import { HashingService, TokenService } from '../type/service';
 import { Configuration } from '@/shared/configuration';
@@ -20,7 +22,9 @@ export class AuthenticateUserUseCase
   implements UseCase<AuthenticateUserUseCaseParams>
 {
   constructor(
+    @Inject(USER_REPOSITORY)
     private readonly getUserCredentialsByEmailRepository: GetUserCredentialsByEmailRepository,
+    @Inject(HASHING_SERVICE)
     private readonly hashingService: HashingService,
     private readonly tokenService: TokenService,
     private readonly configs: Configuration,
