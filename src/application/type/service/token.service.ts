@@ -6,7 +6,7 @@ export type GeneratedToken = {
 export interface TokenService {
   generate: (
     id: string,
-    durationInSeconds: number,
+    duration: '1d' | '1h' | '30m' | '15m',
     secret: string,
     payload?: Record<string, any>,
   ) => GeneratedToken;

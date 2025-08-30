@@ -77,7 +77,7 @@ export class AuthenticateUserUseCase
 
     const generatedToken = this.tokenService.generate(
       credentials.id,
-      this.configs.token.accessToken.durationInSeconds,
+      this.configs.token.accessToken.duration,
       this.configs.token.accessToken.secret,
     );
 

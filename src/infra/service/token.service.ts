@@ -1,20 +1,16 @@
-import { sign } from 'jsonwebtoken';
+import { decode, JwtPayload, sign } from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { GeneratedToken, TokenService } from '@/application/type/service';
+import { Duration } from '@/shared/type';
 
 @Injectable()
 export class JwtTokenService implements TokenService {
   generate(
     id: string,
-    durationInSeconds: number,
+    duration: Duration,
     secret: string,
     payload = {},
   ): GeneratedToken {
-    const now = new Date();
-    const nowInSeconds = Math.floor(now.getTime() / 1000);
-    const expiresInSeconds = nowInSeconds + durationInSeconds;
-    const expiresInMilliseconds = expiresInSeconds * 1000;
-
     const token = sign(
       {
         ...payload,
@@ -22,11 +18,13 @@ export class JwtTokenService implements TokenService {
       secret,
       {
         subject: id,
-        expiresIn: expiresInSeconds,
+        expiresIn: duration,
       },
     );
 
-    const expirationDate = new Date(expiresInMilliseconds).toISOString();
+    const decoded: JwtPayload = decode(token) as JwtPayload;
+
+    const expirationDate = new Date(decoded.exp * 1000).toISOString();
 
     return {
       token,

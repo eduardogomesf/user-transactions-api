@@ -4,6 +4,7 @@ import { JwtTokenService } from './token.service';
 
 jest.mock('jsonwebtoken', () => ({
   sign: jest.fn().mockReturnValue('token'),
+  decode: jest.fn().mockReturnValue({ exp: 1601547300 }),
 }));
 
 jest.useFakeTimers().setSystemTime(new Date(2020, 9, 1, 7));
@@ -19,7 +20,7 @@ describe('TokenService', () => {
     it('should generate a token successfully', () => {
       const signSpy = jest.spyOn(jwt, 'sign');
 
-      const result = sut.generate('any-id', 900, 'any-secret', {
+      const result = sut.generate('any-id', '15m', 'any-secret', {
         foo: 'bar',
       });
 
@@ -32,7 +33,7 @@ describe('TokenService', () => {
         'any-secret',
         {
           subject: 'any-id',
-          expiresIn: 1601547300,
+          expiresIn: '15m',
         },
       );
     });

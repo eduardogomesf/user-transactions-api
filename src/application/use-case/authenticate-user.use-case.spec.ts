@@ -40,7 +40,7 @@ describe('AuthenticateUserUseCase', () => {
     configs = {
       token: {
         accessToken: {
-          durationInSeconds: 900,
+          duration: '15m',
           secret: 'any-secret',
         },
       },
@@ -75,7 +75,7 @@ describe('AuthenticateUserUseCase', () => {
     expect(result.data.valid).toBe(true);
     expect(getCredentialsSpy).toHaveBeenCalledWith(params.email);
     expect(compareSpy).toHaveBeenCalledWith(params.password, 'hashed-password');
-    expect(generateSpy).toHaveBeenCalledWith('any-id', 900, 'any-secret');
+    expect(generateSpy).toHaveBeenCalledWith('any-id', '15m', 'any-secret');
   });
 
   it('should return false if provided params are invalid', async () => {

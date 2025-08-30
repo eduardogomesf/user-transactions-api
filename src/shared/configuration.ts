@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Duration } from './type';
 
 class App {
   port: number;
@@ -17,7 +18,7 @@ class Database {
 class Token {
   accessToken: {
     secret: string;
-    durationInSeconds: number;
+    duration: Duration;
   };
 }
 
@@ -42,9 +43,7 @@ export class Configuration {
     this.token = {
       accessToken: {
         secret: this.configService.getOrThrow('ACCESS_TOKEN_SECRET'),
-        durationInSeconds: Number(
-          this.configService.get('ACCESS_TOKEN_EXPIRATION_IN_SECONDS') ?? '900',
-        ),
+        duration: this.configService.get('ACCESS_TOKEN_DURATION') ?? '15m',
       },
     };
   }
