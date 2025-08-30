@@ -3,7 +3,7 @@ export type GeneratedToken = {
   expiresAt: string;
 };
 
-export interface TokenService {
+export interface TokenGeneratorService {
   generate: (
     id: string,
     duration: '1d' | '1h' | '30m' | '15m',
@@ -11,3 +11,5 @@ export interface TokenService {
     payload?: Record<string, any>,
   ) => GeneratedToken;
 }
+
+export type TokenService = TokenGeneratorService;

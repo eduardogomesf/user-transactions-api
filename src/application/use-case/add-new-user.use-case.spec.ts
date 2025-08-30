@@ -5,7 +5,7 @@ import {
   GetUserByEmailRepository,
   SaveUserRepository,
 } from '../type';
-import { HashingService, IdGeneratorService } from '../type/service';
+import { HashGeneratorService, IdGeneratorService } from '../type/service';
 import { AddNewUserUseCase } from './add-new-user.use-case';
 import { FieldsValidator } from '@/shared/util';
 import { ERROR_CODES } from '@/shared/constant';
@@ -15,7 +15,7 @@ describe('AddNewUserUseCase', () => {
   let getUserByEmailRepository: GetUserByEmailRepository;
   let getUserByDocumentRepository: GetUserByDocumentRepository;
   let saveUserRepository: SaveUserRepository;
-  let hashingService: HashingService;
+  let hashGeneratorService: HashGeneratorService;
   let idGeneratorService: IdGeneratorService;
 
   beforeEach(() => {
@@ -28,9 +28,8 @@ describe('AddNewUserUseCase', () => {
     saveUserRepository = {
       save: jest.fn().mockResolvedValue({}),
     };
-    hashingService = {
+    hashGeneratorService = {
       hash: jest.fn().mockResolvedValue('hashed-value'),
-      compare: jest.fn().mockResolvedValue(true),
     };
     idGeneratorService = {
       generate: jest.fn().mockReturnValue('new-id'),
@@ -44,7 +43,7 @@ describe('AddNewUserUseCase', () => {
       getUserByDocumentRepository,
       getUserByEmailRepository,
       saveUserRepository,
-      hashingService,
+      hashGeneratorService,
       idGeneratorService,
     );
   });
@@ -63,7 +62,7 @@ describe('AddNewUserUseCase', () => {
     expect(result.success).toBe(true);
     expect(result.data).toBeTruthy();
     expect(idGeneratorService.generate).toHaveBeenCalledTimes(1);
-    expect(hashingService.hash).toHaveBeenCalledWith('weak-password');
+    expect(hashGeneratorService.hash).toHaveBeenCalledWith('weak-password');
     expect(getUserByDocumentRepository.getByDocument).toHaveBeenCalledWith(
       '12365423468',
     );

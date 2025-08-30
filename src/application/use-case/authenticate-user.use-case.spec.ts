@@ -7,14 +7,14 @@ import {
 } from '@/shared/constant';
 import { FieldsValidator } from '@/shared/util';
 import { GetUserCredentialsByEmailRepository } from '../type';
-import { HashingService, TokenService } from '../type/service';
+import { HashComparerService, TokenGeneratorService } from '../type/service';
 import { AuthenticateUserUseCase } from './authenticate-user.use-case';
 
 describe('AuthenticateUserUseCase', () => {
   let sut: AuthenticateUserUseCase;
   let getUserCredentialsByEmailRepository: GetUserCredentialsByEmailRepository;
-  let hashingService: HashingService;
-  let tokenService: TokenService;
+  let hashComparerService: HashComparerService;
+  let tokenGeneratorService: TokenGeneratorService;
   let configs: Configuration;
 
   const tokenExpirationDate = '2025-08-10T01:06:12.497Z';
@@ -27,11 +27,10 @@ describe('AuthenticateUserUseCase', () => {
         password: 'hashed-password',
       }),
     };
-    hashingService = {
+    hashComparerService = {
       compare: jest.fn().mockResolvedValue(true),
-      hash: jest.fn(),
     };
-    tokenService = {
+    tokenGeneratorService = {
       generate: jest.fn().mockReturnValue({
         token: 'valid-token',
         expiresAt: tokenExpirationDate,
@@ -48,8 +47,8 @@ describe('AuthenticateUserUseCase', () => {
 
     sut = new AuthenticateUserUseCase(
       getUserCredentialsByEmailRepository,
-      hashingService,
-      tokenService,
+      hashComparerService,
+      tokenGeneratorService,
       configs,
     );
   });
@@ -59,8 +58,8 @@ describe('AuthenticateUserUseCase', () => {
       getUserCredentialsByEmailRepository,
       'getCredentials',
     );
-    const compareSpy = jest.spyOn(hashingService, 'compare');
-    const generateSpy = jest.spyOn(tokenService, 'generate');
+    const compareSpy = jest.spyOn(hashComparerService, 'compare');
+    const generateSpy = jest.spyOn(tokenGeneratorService, 'generate');
 
     const params = {
       email: 'test@mail.com',
@@ -110,7 +109,7 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('should not generate token if password is invalid', async () => {
-    hashingService.compare = jest.fn().mockResolvedValue(false);
+    hashComparerService.compare = jest.fn().mockResolvedValue(false);
 
     const result = await sut.execute({
       email: 'test@mail.com',
@@ -126,7 +125,7 @@ describe('AuthenticateUserUseCase', () => {
   });
 
   it('should return success as false if token was not generated successfully', async () => {
-    tokenService.generate = jest.fn().mockReturnValue(null);
+    tokenGeneratorService.generate = jest.fn().mockReturnValue(null);
 
     const result = await sut.execute({
       email: 'test@mail.com',
