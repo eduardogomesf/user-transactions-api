@@ -72,6 +72,7 @@ describe('AuthenticateUserUseCase', () => {
     expect(result.success).toBe(true);
     expect(result.data.token).toBe('valid-token');
     expect(result.data.expiresAt).toBe(tokenExpirationDate);
+    expect(result.data.valid).toBe(true);
     expect(getCredentialsSpy).toHaveBeenCalledWith(params.email);
     expect(compareSpy).toHaveBeenCalledWith(params.password, 'hashed-password');
     expect(generateSpy).toHaveBeenCalledWith('any-id', 900, 'any-secret');
@@ -100,8 +101,10 @@ describe('AuthenticateUserUseCase', () => {
       password: 'any-password',
     });
 
-    expect(result.success).toBe(false);
-    expect(result.data).toBeNull();
+    expect(result.success).toBe(true);
+    expect(result.data.token).toBeNull();
+    expect(result.data.expiresAt).toBe('');
+    expect(result.data.valid).toBe(false);
     expect(result.code).toBe(CREDENTIAL_ERROR_CODES.invalidCredentials);
     expect(result.message).toBe(CREDENTIAL_ERROR_MESSAGES.invalidCredentials);
   });
@@ -114,8 +117,10 @@ describe('AuthenticateUserUseCase', () => {
       password: 'invalid-password',
     });
 
-    expect(result.success).toBe(false);
-    expect(result.data).toBeNull();
+    expect(result.success).toBe(true);
+    expect(result.data.token).toBeNull();
+    expect(result.data.expiresAt).toBe('');
+    expect(result.data.valid).toBe(false);
     expect(result.code).toBe(CREDENTIAL_ERROR_CODES.invalidCredentials);
     expect(result.message).toBe(CREDENTIAL_ERROR_MESSAGES.invalidCredentials);
   });

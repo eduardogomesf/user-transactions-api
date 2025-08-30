@@ -52,8 +52,12 @@ export class AuthenticateUserUseCase
       );
 
     const invalidCredentialsResponse = {
-      success: false,
-      data: null,
+      success: true,
+      data: {
+        valid: false,
+        token: null,
+        expiresAt: '',
+      },
       code: CREDENTIAL_ERROR_CODES.invalidCredentials,
       message: CREDENTIAL_ERROR_MESSAGES.invalidCredentials,
     };
@@ -91,6 +95,7 @@ export class AuthenticateUserUseCase
       data: {
         token: generatedToken.token,
         expiresAt: generatedToken.expiresAt,
+        valid: true,
       },
     };
   }

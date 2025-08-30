@@ -14,6 +14,7 @@ export class AuthenticateUserUseCaseParams {
 type Response = {
   token: string;
   expiresAt: string;
+  valid: boolean;
 };
 
 export type AuthenticateUserUseCaseResponse = UseCaseResponse<Response>;
