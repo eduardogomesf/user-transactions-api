@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Duration } from './type';
 
 class App {
   port: number;
@@ -14,11 +15,19 @@ class Database {
   url: string;
 }
 
+class Token {
+  accessToken: {
+    secret: string;
+    duration: Duration;
+  };
+}
+
 @Injectable()
 export class Configuration {
   app: App;
   hashing: Hashing;
   relationalDb: Database;
+  token: Token;
 
   constructor(private readonly configService: ConfigService) {
     this.app = {
@@ -30,6 +39,12 @@ export class Configuration {
     };
     this.relationalDb = {
       url: this.configService.getOrThrow('DB_CONNECTION_STRING'),
+    };
+    this.token = {
+      accessToken: {
+        secret: this.configService.getOrThrow('ACCESS_TOKEN_SECRET'),
+        duration: this.configService.get('ACCESS_TOKEN_DURATION') ?? '15m',
+      },
     };
   }
 }

@@ -30,6 +30,7 @@ describe('AddNewUserUseCase', () => {
     };
     hashingService = {
       hash: jest.fn().mockResolvedValue('hashed-value'),
+      compare: jest.fn().mockResolvedValue(true),
     };
     idGeneratorService = {
       generate: jest.fn().mockReturnValue('new-id'),
