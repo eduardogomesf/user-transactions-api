@@ -24,4 +24,5 @@ export interface GetUserCredentialsByEmailRepository {
 
 export type UserRepository = GetUserByDocumentRepository &
   GetUserByEmailRepository &
-  SaveUserRepository;
+  SaveUserRepository &
+  GetUserCredentialsByEmailRepository;

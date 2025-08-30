@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from '@/application/type';
+import { Credentials, UserRepository } from '@/application/type';
 import { User } from '@/domain/entity';
 import { UserModel } from '../model';
 import { RelationalUserMapper } from '../mapper';
@@ -37,5 +37,26 @@ export class RelationalUserRepository implements UserRepository {
     const newUser = this.repository.create(user);
     const createdUser = await this.repository.save(newUser);
     return createdUser ? RelationalUserMapper.toDomain(createdUser) : null;
+  }
+
+  async getCredentials(email: string): Promise<Credentials> {
+    const credentials = await this.repository.findOne({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+      },
+    });
+
+    if (!credentials) return null;
+
+    return {
+      id: credentials.id,
+      email: credentials.email,
+      password: credentials.password,
+    };
   }
 }

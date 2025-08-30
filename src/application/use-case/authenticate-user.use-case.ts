@@ -12,6 +12,7 @@ import {
   ERROR_CODES,
   ERROR_MESSAGES,
   HASHING_SERVICE,
+  TOKEN_SERVICE,
   USER_REPOSITORY,
 } from '@/shared/constant';
 import { HashingService, TokenService } from '../type/service';
@@ -26,6 +27,7 @@ export class AuthenticateUserUseCase
     private readonly getUserCredentialsByEmailRepository: GetUserCredentialsByEmailRepository,
     @Inject(HASHING_SERVICE)
     private readonly hashingService: HashingService,
+    @Inject(TOKEN_SERVICE)
     private readonly tokenService: TokenService,
     private readonly configs: Configuration,
   ) {}
