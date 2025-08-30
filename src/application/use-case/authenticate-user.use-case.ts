@@ -15,7 +15,7 @@ import {
   TOKEN_SERVICE,
   USER_REPOSITORY,
 } from '@/shared/constant';
-import { HashingService, TokenService } from '../type/service';
+import { HashComparerService, TokenGeneratorService } from '../type/service';
 import { Configuration } from '@/shared/configuration';
 
 @Injectable()
@@ -26,9 +26,9 @@ export class AuthenticateUserUseCase
     @Inject(USER_REPOSITORY)
     private readonly getUserCredentialsByEmailRepository: GetUserCredentialsByEmailRepository,
     @Inject(HASHING_SERVICE)
-    private readonly hashingService: HashingService,
+    private readonly hashComparerService: HashComparerService,
     @Inject(TOKEN_SERVICE)
-    private readonly tokenService: TokenService,
+    private readonly tokenGeneratorService: TokenGeneratorService,
     private readonly configs: Configuration,
   ) {}
 
@@ -66,7 +66,7 @@ export class AuthenticateUserUseCase
       return invalidCredentialsResponse;
     }
 
-    const isPasswordValid = await this.hashingService.compare(
+    const isPasswordValid = await this.hashComparerService.compare(
       params.password,
       credentials.password,
     );
@@ -75,7 +75,7 @@ export class AuthenticateUserUseCase
       return invalidCredentialsResponse;
     }
 
-    const generatedToken = this.tokenService.generate(
+    const generatedToken = this.tokenGeneratorService.generate(
       credentials.id,
       this.configs.token.accessToken.duration,
       this.configs.token.accessToken.secret,

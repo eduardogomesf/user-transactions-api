@@ -17,7 +17,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { User } from '@/domain/entity';
 import { FieldsValidator } from '@/shared/util';
-import { HashingService, IdGeneratorService } from '../type/service';
+import { HashGeneratorService, IdGeneratorService } from '../type/service';
 
 @Injectable()
 export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
@@ -29,7 +29,7 @@ export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
     @Inject(USER_REPOSITORY)
     private readonly saveUserRepository: SaveUserRepository,
     @Inject(HASHING_SERVICE)
-    private readonly hashingService: HashingService,
+    private readonly hashGeneratorService: HashGeneratorService,
     @Inject(ID_GENERATOR_SERVICE)
     private readonly idGeneratorService: IdGeneratorService,
   ) {}
@@ -74,7 +74,9 @@ export class AddNewUserUseCase implements UseCase<AddNewUserUseCaseParams> {
       };
     }
 
-    const hashedPassword = await this.hashingService.hash(params.password);
+    const hashedPassword = await this.hashGeneratorService.hash(
+      params.password,
+    );
 
     const userId = this.idGeneratorService.generate();
 
