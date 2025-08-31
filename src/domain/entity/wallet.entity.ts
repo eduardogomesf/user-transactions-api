@@ -10,7 +10,7 @@ export enum Currency {
 export class Wallet extends Entity {
   @IsNumber()
   @IsNotEmpty()
-  balance: number;
+  balanceInCents: number;
 
   @IsEnum(Currency)
   @IsNotEmpty()

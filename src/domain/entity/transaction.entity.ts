@@ -4,7 +4,7 @@ import { Entity } from './entity';
 export class Transaction extends Entity {
   @IsNumber()
   @IsNotEmpty()
-  value: number;
+  valueInCents: number;
 
   @IsString()
   @IsNotEmpty()
