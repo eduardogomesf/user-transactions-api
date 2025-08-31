@@ -10,3 +10,15 @@ export const USER_ERROR_MESSAGES = {
 export const CREDENTIAL_ERROR_MESSAGES = {
   invalidCredentials: 'The provided credentials are invalid',
 };
+
+export const TRANSFER_ERROR_MESSAGES = {
+  payer: {
+    walletNotFound: 'No wallet found for given payerId and currency',
+  },
+  payee: {
+    walletNotFound: 'No wallet found for given payeeId and currency',
+  },
+  balance: {
+    notEnoughBalance: 'You do NOT have enough balance to perform this transfer',
+  },
+};
